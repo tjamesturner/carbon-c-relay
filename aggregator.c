@@ -213,6 +213,10 @@ aggregator_putmetric(
 			 * requested in issue #72. */
 			time(&now);
 			now -= s->expire;
+			// round to nearest even interval boundary
+			// e.g. nearest even minute for 1 minute buckets
+			// see https://github.com/grobian/carbon-c-relay/issues/104
+			now = (now / s->interval) * s->interval;
 			invocation->expire = s->expire + (rand() % s->interval);
 
 			/* allocate enough buckets to hold the past + future */
