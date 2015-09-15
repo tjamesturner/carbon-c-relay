@@ -59,7 +59,10 @@ aggregator_new(unsigned int interval, unsigned int expire)
 
 	ret->interval = interval;
 	ret->expire = expire;
-	ret->bucketcnt = (expire / interval) * 2 + 1 ;
+	// enough buckets to cover from (expiry + splay) in the past
+	// plus 1 extra bucket to account for relay lag and system clock discrepancies
+	// 1 splay + 1 lag + ceiling(expiry/interval)
+	ret->bucketcnt = 3 + (expire-1) / interval;
 	ret->received = 0;
 	ret->sent = 0;
 	ret->dropped = 0;
